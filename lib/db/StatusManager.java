@@ -7,11 +7,15 @@ public class StatusManager {
     private ConnectionManager connectionManager;
     private static int retryCount;
 
+    public StatusManager() {
+        this.connectionManager = new ConnectionManager();
+    }
+
     public StatusManager(ConnectionManager connectionManager) {
         this.connectionManager = connectionManager;
     }
 
-    public Retry save(int uid) {
+    public Retry save(long uid) {
         Map<String, String> data = new HashMap<>();
         data.put("uid", String.valueOf(uid));
         data.put("status", Status.PENDING.name());
@@ -27,10 +31,10 @@ public class StatusManager {
         }
 
         Map<String, String> data = new HashMap<>();
-        data.put("uid", String.valueOf(retry.getId()));
-        data.put("jid", String.valueOf(retry.getId()));
+        data.put("id", String.valueOf(retry.getId()));
+        data.put("uid", String.valueOf(retry.getUid()));
         data.put("status", retry.getStatus().name());
-        String query = "UPDATE retry SET status='{status}' WHERE jid={jid}";
+        String query = "UPDATE retry SET status='{status}' WHERE id={id}";
         connectionManager.execute(query, data);
     }
 

@@ -10,8 +10,8 @@ javac -cp "lib\*" -d out DataLane.java %FILES%
 
 :: execution
 java -cp "out;lib\*" ^
--DdbUrl=jdbc:mysql://localhost:3306/mydb ^
--DdbUser=USER ^
--DdbPass=PASS ^
+-DdbUrl=jdbc:mysql://localhost:3306/datalane ^
+-DdbUser=root ^
+-DdbPass=root ^
 -Dtopic=data-pipeline ^
 DataLane

@@ -16,9 +16,13 @@ public class ConnectionManager {
     }
 
     public ConnectionManager() {
+        System.out.println("using db config: " + url + ", " + user + ", " + pass);
         try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
             connection = DriverManager.getConnection(url, user, pass);
         } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
     }

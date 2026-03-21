@@ -1,26 +1,26 @@
 package lib.db;
 
 public class Retry {
-    private int id;
-    private int uid;
+    private long id;
+    private long uid;
     private int count;
     private Status status;
     
-    public Retry(int id, int uid, Status status){
+    public Retry(long id, long uid, Status status){
         this.id = id;
         this.uid = uid;
         this.status = status;
     }
-    public int getId() {
+    public long getId() {
         return id;
     }
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
-    public int getUid() {
+    public long getUid() {
         return uid;
     }
-    public void setUid(int uid) {
+    public void setUid(long uid) {
         this.uid = uid;
     }
     
