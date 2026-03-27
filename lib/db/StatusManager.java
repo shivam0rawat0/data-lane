@@ -15,12 +15,13 @@ public class StatusManager {
         this.connectionManager = connectionManager;
     }
 
-    public Retry save(long uid) {
-        Map<String, String> data = new HashMap<>();
-        data.put("uid", String.valueOf(uid));
-        data.put("status", Status.PENDING.name());
-        String query = "INSERT INTO retry (uid, status) VALUES ({uid}, '{status}')";
-        return connectionManager.execute(query, data);
+    public Retry save(long uid, String data) {
+        Map<String, String> dataMap = new HashMap<>();
+        dataMap.put("uid", String.valueOf(uid));
+        dataMap.put("status", Status.PENDING.name());
+        dataMap.put("data", data);
+        String query = "INSERT INTO retry (uid, status, data) VALUES ({uid}, '{status}', '{data}')";
+        return connectionManager.execute(query, dataMap);
     }
 
     public void setStatus(Retry retry) {
@@ -34,7 +35,9 @@ public class StatusManager {
         data.put("id", String.valueOf(retry.getId()));
         data.put("uid", String.valueOf(retry.getUid()));
         data.put("status", retry.getStatus().name());
-        String query = "UPDATE retry SET status='{status}' WHERE id={id}";
+        data.put("count", String.valueOf(retry.getCount()));
+        data.put("data", retry.getData());
+        String query = "UPDATE retry SET status='{status}', count={count}, data='{data}' WHERE id={id}";
         connectionManager.execute(query, data);
     }
 

@@ -31,18 +31,35 @@ public class Processor {
         executor.submit(() -> process(job));
     }
 
+    public void submitRetry(Retry retry){
+        executor.submit(() -> processRetry(retry));
+    }
+
     private static boolean isTerminal(Retry retry) {
         return retry.getStatus() == Status.SUCCESS || retry.getStatus() == Status.FAILED;
     }
     
     private void process(Job job){
         StatusManager manager = new StatusManager();
-        Retry retry = manager.save(job.getUid());
+        Retry retry = manager.save(job.getUid(), job.getUrl());
         try {
             while(!isTerminal(retry)) {
                 StateHandler handler = StateHandlerRegistry.getHandler(retry);
-                retry.setStatus(null);
-                retry.setStatus(handler.handle(retry));
+                handler.handle(retry);
+                manager.setStatus(retry);
+            }
+        } catch (Exception e) {
+            retry.setStatus(Status.FAILED);
+            manager.setStatus(retry);
+        }
+    }
+
+    private void processRetry(Retry retry){
+        StatusManager manager = new StatusManager();
+        try {
+            while(!isTerminal(retry)) {
+                StateHandler handler = StateHandlerRegistry.getHandler(retry);
+                handler.handle(retry);
                 manager.setStatus(retry);
             }
         } catch (Exception e) {

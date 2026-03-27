@@ -5,11 +5,16 @@ public class Retry {
     private long uid;
     private int count;
     private Status status;
+    private String data;
     
-    public Retry(long id, long uid, Status status){
+    public Retry(){        
+    }
+    public Retry(long id, long uid,int count, Status status, String data) {
         this.id = id;
         this.uid = uid;
+        this.count = count;
         this.status = status;
+        this.data = data;
     }
     public long getId() {
         return id;
@@ -35,5 +40,11 @@ public class Retry {
     }
     public void setCount(int count) {
         this.count = count;
+    }
+    public String getData() {
+        return data;
+    }
+    public void setData(String data) {
+        this.data = data;
     }
 }

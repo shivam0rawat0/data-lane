@@ -37,7 +37,13 @@ public class ConnectionManager {
             ResultSet rs = stmt.getGeneratedKeys();
             if (rs.next()) {
                 long id = rs.getLong(1);
-                return new Retry((int) id, Integer.parseInt(data.get("uid")), Status.valueOf(data.get("status")));
+                return new Retry(
+                    (int) id,
+                    Integer.parseInt(data.get("uid")),
+                    Integer.parseInt(data.getOrDefault("count", "0")),
+                    Status.valueOf(data.get("status")),
+                    data.get("data")
+                );
             }
         } catch (SQLException e) {
             e.printStackTrace();

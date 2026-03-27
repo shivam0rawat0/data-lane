@@ -6,6 +6,7 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 
 import lib.consumer.Consumer;
 import lib.consumer.RegularConsumer;
+import lib.consumer.RetryConsumer;
 import lib.db.ConnectionManager;
 import lib.db.StatusManager;
 
@@ -46,7 +47,9 @@ import lib.db.StatusManager;
 
 public class DataLane {
     private static Consumer<String, String> consumer;
+    private static Consumer<String, String> retryConsumer;
     private static Thread consumerThread;
+    private static Thread retryConsumerThread;
 
     private static String getTopic(){
         String topic = System.getProperty("topic");
@@ -86,5 +89,9 @@ public class DataLane {
         consumer = new RegularConsumer(props,List.of(getTopic()));
         consumerThread = new Thread(consumer);
         consumerThread.start();
+
+        retryConsumer = new RetryConsumer(props, List.of("data-pipeline-retry"));
+        retryConsumerThread = new Thread(retryConsumer);
+        retryConsumerThread.start();
     }
 }

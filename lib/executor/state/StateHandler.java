@@ -4,7 +4,7 @@ import lib.db.Retry;
 import lib.db.Status;
 
 public interface StateHandler {
-    Status handle(Retry retry) throws Exception;
+    void handle(Retry retry) throws Exception;
 
     public static Status getNextState(Retry retry) {
         switch (retry.getStatus()) {
