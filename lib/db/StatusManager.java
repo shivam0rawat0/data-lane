@@ -8,11 +8,7 @@ public class StatusManager {
     private static int retryCount;
 
     public StatusManager() {
-        this.connectionManager = new ConnectionManager();
-    }
-
-    public StatusManager(ConnectionManager connectionManager) {
-        this.connectionManager = connectionManager;
+        this.connectionManager = ConnectionManager.getInstance();
     }
 
     public Retry save(long uid, String data) {

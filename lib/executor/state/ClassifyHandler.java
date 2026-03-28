@@ -9,7 +9,7 @@ import lib.db.Status;
 public class ClassifyHandler implements StateHandler {
     @Override
     public void handle(Retry retry) {
-        System.out.printf("Handling format for retry: id=%d, uid=%d, data=%s\n", retry.getId(), retry.getUid(), retry.getData());
+        System.out.printf("Count Stage for retry: id=%d, uid=%d, data=%s\n", retry.getId(), retry.getUid(), retry.getData());
         String frequency = Arrays.stream(retry.getData().split(","))
                 .collect(Collectors.groupingBy(
                         n -> n,                // key = number itself

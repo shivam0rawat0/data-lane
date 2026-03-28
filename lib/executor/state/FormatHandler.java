@@ -8,7 +8,7 @@ import lib.db.Status;
 public class FormatHandler implements StateHandler {
     @Override
     public void handle(Retry retry) {
-        System.out.printf("Handling format for retry: id=%d, uid=%d, data=%s\n", retry.getId(), retry.getUid(), retry.getData());
+        System.out.printf("Format Stage for retry: id=%d, uid=%d, data=%s\n", retry.getId(), retry.getUid(), retry.getData());
         String primed = Arrays.stream(retry.getData().split(","))
             .map(x -> findNthPrime(Integer.parseInt(x)))
             .map(x -> String.valueOf(x))
