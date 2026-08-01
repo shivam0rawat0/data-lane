@@ -5,12 +5,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import lib.db.Retry;
-import lib.db.Status;
-import lib.db.StatusManager;
 import lib.entity.Job;
-import lib.executor.state.StateHandler;
-import lib.executor.state.StateHandlerRegistry;
+import lib.db.Status;
+import lib.db.Context;
+import lib.db.StatusManager;
+import lib.executor.state.ExecutionGraph;
+import lib.executor.state.StageHandlerRegistry;
 
 public class Processor {
 
@@ -31,40 +31,32 @@ public class Processor {
         executor.submit(() -> process(job));
     }
 
-    public void submitRetry(Retry retry){
+    public void submitRetry(Context retry){
         executor.submit(() -> processRetry(retry));
     }
 
-    private static boolean isTerminal(Retry retry) {
-        return retry.getStatus() == Status.SUCCESS || retry.getStatus() == Status.FAILED;
-    }
-    
     private void process(Job job){
         StatusManager manager = new StatusManager();
-        Retry retry = manager.save(job.getUid(), job.getUrl());
-        try {
-            while(!isTerminal(retry)) {
-                StateHandler handler = StateHandlerRegistry.getHandler(retry);
-                handler.handle(retry);
-                manager.setStatus(retry);
-            }
-        } catch (Exception e) {
-            retry.setStatus(Status.FAILED);
-            manager.setStatus(retry);
-        }
+        Context context = new Context(
+            0,job.getUid(),0,Status.PENDING,StageHandlerRegistry.getFirst(),job.getData()
+        );
+        context = manager.save(context);
+        execute(context, manager);
     }
 
-    private void processRetry(Retry retry){
-        StatusManager manager = new StatusManager();
+    private void processRetry(Context context){
+        execute(context, new StatusManager());
+    }    
+
+    private void execute(Context context, StatusManager manager) {
+        ExecutionGraph executionGraph = new ExecutionGraph();
         try {
-            while(!isTerminal(retry)) {
-                StateHandler handler = StateHandlerRegistry.getHandler(retry);
-                handler.handle(retry);
-                manager.setStatus(retry);
+            while(executionGraph.step(context)) {
+                manager.setStatus(context);
             }
+            manager.setStatusAs(context,Status.SUCCESS);
         } catch (Exception e) {
-            retry.setStatus(Status.FAILED);
-            manager.setStatus(retry);
+            manager.setStatusAs(context,Status.RETRY);
         }
     }
 }

@@ -2,15 +2,15 @@ package lib.entity;
 
 public class Job {
     private long uid;
-    private String url;
+    private String data;
     private String type;
     
     public Job() {
     }
 
-    public Job(long uid, String url, String type) {
+    public Job(long uid, String data, String type) {
         this.uid = uid;
-        this.url = url;
+        this.data = data;
         this.type = type;
     }
 
@@ -20,11 +20,11 @@ public class Job {
     public void setUid(long uid) {
         this.uid = uid;
     }
-    public String getUrl() {
-        return url;
+    public String getData() {
+        return data;
     }
-    public void setUrl(String url) {
-        this.url = url;
+    public void setData(String data) {
+        this.data = data;
     }
     public String getType() {
         return type;

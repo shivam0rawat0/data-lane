@@ -1,19 +1,21 @@
 package lib.db;
 
-public class Retry {
+public class Context {
     private long id;
     private long uid;
     private int count;
     private Status status;
+    private String stage;
     private String data;
     
-    public Retry(){        
+    public Context(){        
     }
-    public Retry(long id, long uid,int count, Status status, String data) {
+    public Context(long id, long uid,int count, Status status, String stage, String data) {
         this.id = id;
         this.uid = uid;
         this.count = count;
         this.status = status;
+        this.stage = stage;
         this.data = data;
     }
     public long getId() {
@@ -46,5 +48,11 @@ public class Retry {
     }
     public void setData(String data) {
         this.data = data;
+    }
+    public String getStage() {
+        return stage;
+    }
+    public void setStage(String stage) {
+        this.stage = stage;
     }
 }

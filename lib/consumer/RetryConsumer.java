@@ -5,7 +5,7 @@ import java.util.Properties;
 import com.alibaba.fastjson2.JSON;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
-import lib.db.Retry;
+import lib.db.Context;
 import lib.executor.Processor;
 
 public class RetryConsumer extends Consumer<String, String> {
@@ -23,7 +23,7 @@ public class RetryConsumer extends Consumer<String, String> {
     public void process(ConsumerRecord<String, String> record) {
         System.out.printf("Consumed record: key=%s, value=%s, partition=%d, offset=%d%n",
                 record.key(), record.value(), record.partition(), record.offset());
-        Retry retry = JSON.parseObject(record.value(), Retry.class);
+        Context retry = JSON.parseObject(record.value(), Context.class);
         System.out.printf("Parsed Retry: id=%d, uid=%d, data=%s%n", retry.getId(), retry.getUid(), retry.getData());
         processor.submitRetry(retry);
     }

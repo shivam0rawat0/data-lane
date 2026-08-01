@@ -24,7 +24,7 @@ public class RegularConsumer extends Consumer<String, String> {
         System.out.printf("Consumed record: key=%s, value=%s, partition=%d, offset=%d%n",
                 record.key(), record.value(), record.partition(), record.offset());
         Job job = JSON.parseObject(record.value(), Job.class);
-        System.out.printf("Parsed Job: uid=%d, url=%s, type=%s%n", job.getUid(), job.getUrl(), job.getType());
+        System.out.printf("Parsed Job: uid=%d, data=%s, type=%s%n", job.getUid(), job.getData(), job.getType());
         processor.submit(job);
     }
 }

@@ -3,12 +3,13 @@ package lib.executor.state;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-import lib.db.Retry;
+import lib.db.Context;
 import lib.db.Status;
+import lib.executor.Handler;
 
-public class ClassifyHandler implements StateHandler {
+public class ClassifyHandler implements Handler {
     @Override
-    public void handle(Retry retry) {
+    public void handle(Context retry) {
         System.out.printf("Count Stage for retry: id=%d, uid=%d, data=%s\n", retry.getId(), retry.getUid(), retry.getData());
         String frequency = Arrays.stream(retry.getData().split(","))
                 .collect(Collectors.groupingBy(

@@ -1,4 +1,5 @@
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -9,6 +10,7 @@ import lib.consumer.RegularConsumer;
 import lib.consumer.RetryConsumer;
 import lib.db.ConnectionManager;
 import lib.db.StatusManager;
+import lib.executor.state.StageHandlerRegistry;
 
     /*
     Standard Pipeline:
@@ -71,7 +73,12 @@ public class DataLane {
         }
     }
 
+    private static void setupFlow(String flow){
+        StageHandlerRegistry.registerFlow(flow);
+    }
+
     public static void main(String[] args) {
+        setupFlow("FETCH, FORMAT, CLASSIFY");
         String url = System.getProperty("dbUrl");
         String user = System.getProperty("dbUser");
         String pass = System.getProperty("dbPass");

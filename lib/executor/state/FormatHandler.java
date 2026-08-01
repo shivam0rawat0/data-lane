@@ -2,12 +2,13 @@ package lib.executor.state;
 
 import java.util.Arrays;
 
-import lib.db.Retry;
+import lib.db.Context;
 import lib.db.Status;
+import lib.executor.Handler;
 
-public class FormatHandler implements StateHandler {
+public class FormatHandler implements Handler {
     @Override
-    public void handle(Retry retry) {
+    public void handle(Context retry) {
         System.out.printf("Format Stage for retry: id=%d, uid=%d, data=%s\n", retry.getId(), retry.getUid(), retry.getData());
         String primed = Arrays.stream(retry.getData().split(","))
             .map(x -> findNthPrime(Integer.parseInt(x)))
@@ -15,7 +16,7 @@ public class FormatHandler implements StateHandler {
             .reduce((a, b) -> String.valueOf(a) + "," + String.valueOf(b))
             .orElse("");
         retry.setData(primed);
-        retry.setStatus(Status.CLASSIFY);
+        retry.setStatus(Status.SUCCESS);
     }
 
     private int findNthPrime(int n) {

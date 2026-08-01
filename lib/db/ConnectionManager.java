@@ -51,12 +51,12 @@ public class ConnectionManager {
         notifyAll();
     }
 
-    public Retry execute(String query, Map<String, String> data) {
+    public Context execute(String query, Map<String, String> data) {
         for (Map.Entry<String, String> entry : data.entrySet()) {
             query = query.replace("{" + entry.getKey() + "}", entry.getValue());
         }
         
-        Retry retry = null;
+        Context retry = null;
         Connection connection = getConnection();
         try {
             Statement stmt = connection.createStatement();
@@ -64,11 +64,12 @@ public class ConnectionManager {
             ResultSet rs = stmt.getGeneratedKeys();
             if (rs.next()) {
                 long id = rs.getLong(1);
-                retry = new Retry(
+                retry = new Context(
                     (int) id,
                     Integer.parseInt(data.get("uid")),
                     Integer.parseInt(data.getOrDefault("count", "0")),
                     Status.valueOf(data.get("status")),
+                    data.get("stage"),
                     data.get("data")
                 );
             }
