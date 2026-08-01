@@ -34,16 +34,16 @@ public class StageHandlerRegistry {
         return context.getStage().equals(terminalStage);
     }
 
-    public static Handler getHandler(Context context) {
-        return instanceHandler(context);
-    }
-
-    public static void setNextStage(Context context) {
+    public static void next(Context context) {
         if(sequence.containsKey(context.getStage())) {
             context.setStage(sequence.get(context.getStage()));
         } else {
             throw new IllegalArgumentException("Unknown stage: " + context.getStage());
         }
+    }
+
+    public static Handler getHandler(Context context) {
+        return instanceHandler(context);
     }
 
     private static Handler instanceHandler(Context context) {

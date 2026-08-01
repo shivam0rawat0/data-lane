@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -9,41 +8,37 @@ import lib.consumer.Consumer;
 import lib.consumer.RegularConsumer;
 import lib.consumer.RetryConsumer;
 import lib.db.ConnectionManager;
-import lib.db.StatusManager;
-import lib.executor.state.StageHandlerRegistry;
+import lib.executor.state.ExecutionGraph;
 
     /*
     Standard Pipeline:
 
-    TB1
-    seed_url(
-        uid autoincrement,
-        url varchar(255),
-        type ENUM(HTML, JSON, XML)
-    )
-
-    P1 -> (M1) -> DATA
+    Kakfa Topic: data-pipeline
     key: ""
     value: "{
         "uid": 1,
-        "url": "http://example.com",
-        "type": ENUM(HTML, JSON, XML),
+        "data": "http://example.com",
+        "type": "string",
     }"
 
-    TB2
-    retry(
-        jid autoincrement,
-        uid int,(FK_ID)
-        status ENUM(PENDING, IN_PROGRESS, FAILED, SUCCESS),
-    )
+    Context Table:
+    CREATE TABLE retry (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        uid INT NOT NULL,
+        count INT DEFAULT 0,
+        status VARCHAR(50) NOT NULL,
+        stage VARCHAR(50) NOT NULL,
+        data varchar(1000)
+    );
 
-    P2 -> (M2) -> RETRY
+    Kakfa Retry Topic: data-pipeline-retry
     key: ""
     value: "{
         "jid": 123,
-        "url": "http://example.com",
-        "type": ENUM(HTML, JSON, XML),
-        "status": ENUM(PENDING, IN_PROGRESS, FAILED, SUCCESS),
+        "data": "http://example.com",
+        "type": "string",
+        "stage": "STAGE_NAME",
+        "status": [PENDING, SUCCESS, RETRY, FAILED]
     }
     */
 
@@ -73,18 +68,15 @@ public class DataLane {
         }
     }
 
-    private static void setupFlow(String flow){
-        StageHandlerRegistry.registerFlow(flow);
-    }
-
     public static void main(String[] args) {
-        setupFlow("FETCH, FORMAT, CLASSIFY");
+        ExecutionGraph.setRetryCount(getRetryCount());
+        ExecutionGraph.setupFlow("FETCH, FORMAT, CLASSIFY");
+
         String url = System.getProperty("dbUrl");
         String user = System.getProperty("dbUser");
         String pass = System.getProperty("dbPass");
         ConnectionManager.setConfig(url, user, pass);
-        StatusManager.setRetryCount(getRetryCount());
-
+        
         Properties props = new Properties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         props.put(ConsumerConfig.GROUP_ID_CONFIG, "basic-consumer-group");

@@ -5,7 +5,6 @@ import java.util.Map;
 
 public class StatusManager {
     private ConnectionManager connectionManager;
-    private static int retryCount;
 
     public StatusManager() {
         this.connectionManager = ConnectionManager.getInstance();
@@ -24,16 +23,10 @@ public class StatusManager {
 
     public void setStatusAs(Context retry,Status status) {
         retry.setStatus(status);
-        setStatus(retry);
+        update(retry);
     }
 
-    public void setStatus(Context retry) {
-        if (retry.getStatus().equals(Status.RETRY)) {
-            retry.setCount(retry.getCount() + 1);
-            if (retry.getCount() >= retryCount)
-                retry.setStatus(Status.FAILED);
-        }
-
+    public void update(Context retry) {
         Map<String, String> data = new HashMap<>();
         data.put("id", String.valueOf(retry.getId()));
         data.put("uid", String.valueOf(retry.getUid()));
@@ -43,9 +36,5 @@ public class StatusManager {
         data.put("data", retry.getData());
         String query = "UPDATE retry SET status='{status}', count={count}, data='{data}', stage='{stage}' WHERE id={id}";
         connectionManager.execute(query, data);
-    }
-
-    public static void setRetryCount(int retryCount) {
-        StatusManager.retryCount = retryCount;
     }
 }

@@ -52,7 +52,7 @@ public class Processor {
         ExecutionGraph executionGraph = new ExecutionGraph();
         try {
             while(executionGraph.step(context)) {
-                manager.setStatus(context);
+                manager.update(context);
             }
             manager.setStatusAs(context,Status.SUCCESS);
         } catch (Exception e) {
