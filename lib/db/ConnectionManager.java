@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Stack;
 
 public class ConnectionManager {
-    private static final int MAX_CONNECTIONS = 10;
+    private static final int MAX_CONNECTIONS = 16;
     private static Stack<Connection> connectionPool = new Stack<>();
     private static String url;
     private static String user;
@@ -70,6 +70,7 @@ public class ConnectionManager {
                     Integer.parseInt(data.getOrDefault("count", "0")),
                     Status.valueOf(data.get("status")),
                     data.get("stage"),
+                    data.get("pipeline"),
                     data.get("data")
                 );
             }

@@ -6,11 +6,11 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import lib.entity.Job;
+import lib.executor.stage.ExecutionGraph;
+import lib.executor.stage.PipelineRegistry;
 import lib.db.Status;
 import lib.db.Context;
 import lib.db.StatusManager;
-import lib.executor.state.ExecutionGraph;
-import lib.executor.state.StageHandlerRegistry;
 
 public class Processor {
 
@@ -18,8 +18,8 @@ public class Processor {
 
     public Processor() {
         this.executor = new ThreadPoolExecutor(
-        8,
-        8,
+        12,
+        12,
         0,
         TimeUnit.SECONDS,
         new ArrayBlockingQueue<>(1000),
@@ -37,8 +37,17 @@ public class Processor {
 
     private void process(Job job){
         StatusManager manager = new StatusManager();
+        PipelineRegistry.loadPipeline(job.getType());
+        System.out.println("[+f:e][" + job.getUid() + "]");
+        System.out.printf("Processing Job: uid=%d, data=%s, type=%s%n", job.getUid(), job.getData(), job.getType());
         Context context = new Context(
-            0,job.getUid(),0,Status.PENDING,StageHandlerRegistry.getFirst(),job.getData()
+            0,
+            job.getUid(),
+            0,
+            Status.PENDING,
+            PipelineRegistry.getFirst(job.getType()),
+            job.getType(),
+            job.getData()
         );
         context = manager.save(context);
         execute(context, manager);

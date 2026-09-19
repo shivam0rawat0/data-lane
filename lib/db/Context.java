@@ -1,23 +1,31 @@
 package lib.db;
 
+import java.time.Instant;
+
 public class Context {
     private long id;
     private long uid;
     private int count;
     private Status status;
     private String stage;
+    private String pipeline;
     private String data;
+    private Instant createdAt;
+    private Instant updatedAt;
     
     public Context(){        
     }
-    public Context(long id, long uid,int count, Status status, String stage, String data) {
+
+    public Context(long id, long uid,int count, Status status, String stage, String pipeline, String data) {
         this.id = id;
         this.uid = uid;
         this.count = count;
         this.status = status;
         this.stage = stage;
+        this.pipeline = pipeline;
         this.data = data;
     }
+
     public long getId() {
         return id;
     }
@@ -54,5 +62,20 @@ public class Context {
     }
     public void setStage(String stage) {
         this.stage = stage;
+    }
+    public String getPipeline() {
+        return pipeline;
+    }
+    public void setPipeline(String pipeline) {
+        this.pipeline = pipeline;
+    }
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

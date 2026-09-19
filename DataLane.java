@@ -7,8 +7,11 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import lib.consumer.Consumer;
 import lib.consumer.RegularConsumer;
 import lib.consumer.RetryConsumer;
+import lib.consumer.Subscriber;
 import lib.db.ConnectionManager;
-import lib.executor.state.ExecutionGraph;
+import lib.db.Context;
+import lib.executor.stage.ExecutionGraph;
+import lib.executor.stage.PipelineRegistry;
 
     /*
     Standard Pipeline:
@@ -48,6 +51,9 @@ public class DataLane {
     private static Thread consumerThread;
     private static Thread retryConsumerThread;
 
+    
+    private static Subscriber subscriber;
+
     private static String getTopic(){
         String topic = System.getProperty("topic");
         if(topic == null || topic.equals("")){
@@ -69,8 +75,24 @@ public class DataLane {
     }
 
     public static void main(String[] args) {
+        PipelineRegistry.setHandlerRepository(
+            System.getProperty("classDir"),
+            System.getProperty("repoDir")
+        );
+
+        // PipelineRegistry.loadPipeline("FeToFr");
+        // PipelineRegistry.loadPipeline("SC");
+        // Context context = new Context();
+        // context.setStage("Fetch");
+        // PipelineRegistry.getHandler(context);
+        // context.setStage("Format");
+        // PipelineRegistry.getHandler(context);
+        // context.setStage("Send");
+        // PipelineRegistry.getHandler(context);
+        // context.setStage("Classify");
+        // PipelineRegistry.getHandler(context);
+
         ExecutionGraph.setRetryCount(getRetryCount());
-        ExecutionGraph.setupFlow("FETCH, FORMAT, CLASSIFY");
 
         String url = System.getProperty("dbUrl");
         String user = System.getProperty("dbUser");
@@ -85,12 +107,22 @@ public class DataLane {
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "true");
         
-        consumer = new RegularConsumer(props,List.of(getTopic()));
-        consumerThread = new Thread(consumer);
-        consumerThread.start();
+        //consumer = new RegularConsumer(props,List.of(getTopic()));
+        //consumerThread = new Thread(consumer);
+        //consumerThread.start();
 
-        retryConsumer = new RetryConsumer(props, List.of("data-pipeline-retry"));
-        retryConsumerThread = new Thread(retryConsumer);
-        retryConsumerThread.start();
+        Subscriber subscriber = new Subscriber(new String[]{
+                "localhost",
+                "3060",
+                "consumer",
+                "request"
+            });
+        //consumerThread = new Thread(subscriber::consume);
+        //consumerThread.start();
+
+        //retryConsumer = new RetryConsumer(props, List.of("data-pipeline-retry"));
+        //retryConsumerThread = new Thread(retryConsumer);
+        //retryConsumerThread.start();
+        subscriber.consume();
     }
 }

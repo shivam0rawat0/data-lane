@@ -1,19 +1,14 @@
-package lib.executor.state;
+package lib.executor.stage;
 
 
 import lib.db.Context;
 import lib.db.Status;
-import lib.executor.Handler;
 
 public class ExecutionGraph {
     private static int retryCount;
 
     public static void setRetryCount(int retryCount) {
         ExecutionGraph.retryCount = retryCount;
-    }
-
-    public static void setupFlow(String flow){
-        StageHandlerRegistry.registerFlow(flow);
     }
 
     /*
@@ -35,14 +30,14 @@ public class ExecutionGraph {
                 }
             // Retry executes the current stage again.
             case PENDING:
-                Handler handler = StageHandlerRegistry.getHandler(context);
+                Handler handler = PipelineRegistry.getHandler(context);
                 handler.handle(context);
                 return true;
             case SUCCESS:
-                if(StageHandlerRegistry.isLast(context)) {
+                if(PipelineRegistry.isLast(context)) {
                     return false;
                 }
-                StageHandlerRegistry.next(context);
+                PipelineRegistry.next(context);
                 context.setStatus(Status.PENDING);
                 return true;
             case FAILED:
