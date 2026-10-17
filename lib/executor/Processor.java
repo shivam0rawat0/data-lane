@@ -61,11 +61,13 @@ public class Processor {
         ExecutionGraph executionGraph = new ExecutionGraph();
         try {
             while(executionGraph.step(context)) {
-                manager.update(context);
+                //manager.update(context);
             }
-            manager.setStatusAs(context,Status.SUCCESS);
+            context.setStatus(Status.SUCCESS);
+            //manager.setStatusAs(context,Status.SUCCESS);
         } catch (Exception e) {
-            manager.setStatusAs(context,Status.RETRY);
+            //manager.setStatusAs(context,Status.RETRY);
+            context.setStatus(Status.RETRY);
         }
     }
 }

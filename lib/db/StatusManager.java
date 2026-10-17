@@ -5,12 +5,24 @@ import java.util.Map;
 
 public class StatusManager {
     private ConnectionManager connectionManager;
+    private static boolean isPersistenceActive = false;
 
     public StatusManager() {
         this.connectionManager = ConnectionManager.getInstance();
     }
 
+    public static void setPersistenceOn() {
+        isPersistenceActive = true;
+    }
+
+    public static void setPersistenceOff() {
+        isPersistenceActive = false;
+    }
+    
     public Context save(Context context) {
+        if (!isPersistenceActive) {
+            return context;
+        }
         Map<String, String> dataMap = new HashMap<>();
         dataMap.put("uid", String.valueOf(context.getUid()));
         dataMap.put("status", context.getStatus().name());
@@ -28,6 +40,9 @@ public class StatusManager {
     }
 
     public void update(Context retry) {
+        if (!isPersistenceActive) {
+            return;
+        }
         Map<String, String> data = new HashMap<>();
         data.put("id", String.valueOf(retry.getId()));
         data.put("uid", String.valueOf(retry.getUid()));
